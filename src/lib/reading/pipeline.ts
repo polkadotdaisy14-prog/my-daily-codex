@@ -361,6 +361,16 @@ function landingFor(all: AllCharts, c: TransitContact): string {
   return `${label} in ${p.sign} in the ${ordinal(p.house)}`;
 }
 
+/** Landing place + how it receives the transit, in plain language.
+ * The house is the core "where"; the receiving planet/point and sign travel
+ * with it, and each genuine landing names its own receiving contact — never
+ * collapsed to a single default placement. */
+function landingWithReceiving(all: AllCharts, c: TransitContact): string {
+  const place = landingFor(all, c);
+  const dir = c.applying ? 'is closing in on' : 'is moving away from';
+  return `${place} — transiting ${c.transitBody} ${dir} it`;
+}
+
 function contactClause(c: TransitContact | null): string {
   if (!c) return '';
   const dir = c.applying ? 'is closing in on' : 'is moving away from';
@@ -551,7 +561,7 @@ export function buildDailyReading(all: AllCharts, input: BirthInput, dateYMD: st
       if (t.contact) contactSet.set(`${t.contact.transitBody}-${t.contact.natalTarget}-${t.contact.aspect}`, t.contact);
     }
     const themeContacts = [...contactSet.values()].sort((a, b) => a.orb - b.orb).slice(0, 4);
-    const landings = themeContacts.map((c) => landingFor(all, c));
+    const landings = themeContacts.map((c) => landingWithReceiving(all, c));
     return {
       family: s.family,
       name: FAMILIES[s.family].name,
